@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Maven Project File
+    Purpose: Defines dependencies, plugins, and Java version for the HybridQAFramework project.
+    Why this way: Maven gives us a standard, Jenkins-friendly build lifecycle so `mvn clean test`
+    runs compilation, test execution, and reporting consistently across developer machines and CI servers.
+    Jenkins Tip: In a freestyle job, set the build step to `mvn clean test -Dbrowser=chrome`
+    if you want to force Chrome from CI without editing the suite files.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.hybrid</groupId>
+    <artifactId>HybridQAFramework</artifactId>
+    <version>1.0.0</version>
+    <name>HybridQAFramework</name>
+    <description>Production-ready Selenium + TestNG + Maven hybrid automation framework.</description>
+
+    <properties>
+        <!-- Java 11 is a stable baseline widely supported by Selenium 4 and modern CI agents. -->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Centralized versions make upgrades easier for junior engineers later. -->
+        <selenium.version>4.32.0</selenium.version>
+        <testng.version>7.10.2</testng.version>
+        <webdrivermanager.version>5.8.0</webdrivermanager.version>
+        <extentreports.version>5.1.2</extentreports.version>
+        <poi.version>5.3.0</poi.version>
+        <log4j2.version>2.24.3</log4j2.version>
+        <surefire.version>3.2.5</surefire.version>
+    </properties>
+
+    <dependencies>
+        <!-- Selenium Java gives us WebDriver, support classes, waits, and PageFactory APIs. -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- TestNG is used for annotations, assertions, parallel execution, and listeners. -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
+        <!-- WebDriverManager downloads matching browser drivers automatically. -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+        </dependency>
+
+        <!-- ExtentReports generates readable HTML reports for technical and non-technical stakeholders. -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extentreports.version}</version>
+        </dependency>
+
+        <!-- Apache POI core library for reading Microsoft Office files. -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
+        <!-- Apache POI OOXML module is required for modern .xlsx Excel workbooks. -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
+        <!-- Log4j2 helps us log framework execution details in a production-friendly way. -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <!--
+                Surefire is the plugin that actually runs TestNG when you execute `mvn clean test`.
+                It points to testng.xml by default, making the project Jenkins-ready out of the box.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <systemPropertyVariables>
+                        <!--
+                            Allows command-line override like:
+                            mvn clean test -Dbrowser=firefox
+                        -->
+                        <browser>${browser}</browser>
+                    </systemPropertyVariables>
+                    <!-- Reuse forked JVM to keep the build stable and predictable in CI. -->
+                    <reuseForks>true</reuseForks>
+                    <forkCount>1</forkCount>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

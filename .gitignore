@@ -1,0 +1,20 @@
+# Maven build output
+target/
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Test artifacts generated at runtime
+reports/
+screenshots/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Helper artifacts that are not part of the Java framework
+node_modules/
