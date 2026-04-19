@@ -11,6 +11,8 @@ target/
 # Test artifacts generated at runtime
 reports/
 screenshots/
+!src/main/java/com/hybrid/reports/
+!src/main/java/com/hybrid/reports/*.java
 
 # OS files
 .DS_Store
